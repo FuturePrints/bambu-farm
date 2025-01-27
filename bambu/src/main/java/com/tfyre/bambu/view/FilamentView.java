@@ -103,28 +103,32 @@ public class FilamentView extends FormLayout implements NotificationHelper, View
     }
 
     public FilamentView build(final String printerName, final Optional<Tray> tray) {
-        addClassName("filament-view");
-        filaments.setItemLabelGenerator(Filament::getDescription);
-        filaments.setItems(getFilaments());
+    addClassName("filament-view");
+    filaments.setItemLabelGenerator(Filament::getDescription);
+    filaments.setItems(getFilaments());
 
-        setTemp(minTemp);
-        setTemp(maxTemp);
+    setTemp(minTemp);
+    setTemp(maxTemp);
 
-        minTemp.setValue(190);
-        maxTemp.setValue(220);
+    minTemp.setValue(190);
+    maxTemp.setValue(220);
 
-        tray.ifPresent(t -> {
-            filaments.setValue(Filament.getFilament(t.getTrayInfoIdx()).orElse(Filament.UNKNOWN));
-            color.setValue("#%.6s".formatted(t.getTrayColor()));
-            minTemp.setValue(parseInt(printerName, t.getNozzleTempMin(), 190));
-            maxTemp.setValue(parseInt(printerName, t.getNozzleTempMax(), 220));
-        });
+    tray.ifPresent(t -> {
+        // Attempt to identify the filament by tray type with fallback to generic
+        filaments.setValue(Filament.getFilamentByTrayType(t.getTrayType()).orElse(Filament.UNKNOWN));
 
-        add(filaments, color, minTemp, maxTemp);
-        setColspan(color, 2);
+        // Set other tray properties
+        color.setValue("#%.6s".formatted(t.getTrayColor()));
+        minTemp.setValue(parseInt(printerName, t.getNozzleTempMin(), 190));
+        maxTemp.setValue(parseInt(printerName, t.getNozzleTempMax(), 220));
+    });
 
-        return this;
-    }
+    add(filaments, color, minTemp, maxTemp);
+    setColspan(color, 2);
+
+    return this;
+}
+
 
     public final class ColorField extends CustomField<String> {
 
