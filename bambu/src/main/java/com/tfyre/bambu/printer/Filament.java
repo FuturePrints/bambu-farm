@@ -115,7 +115,6 @@ public enum Filament {
                 .filter(filament -> filament.trayType.equalsIgnoreCase(trayType) && filament.isGeneric)
                 .findFirst();
     }
-}
 
     public static String getFilamentDescription(final String code, final boolean fullName) {
         final Function<Filament, String> mapper = fullName ? MAPPER_DESCRIPTION : MAPPER_TYPE;
